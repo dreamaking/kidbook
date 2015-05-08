@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html class="fully">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0
+, user-scalable=no">
+<title></title>
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/base.css">
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/mycmt.css">
+<script src="{{STATIC_URL}}js/cfg.js"></script>
+<script src="{{STATIC_URL}}js/zepto.min.js"></script>
+<script src="{{STATIC_URL}}js/zepto.cookie.min.js"></script>
+</head>
+<body class="fully">
+<div class="container fully" id="container">
+<p>清除cookie</p>
+</div>
+</body>
+<script>
+$.fn.cookie("visitor_openid", null);
+$.fn.cookie("share-mask", null);
+$.fn.cookie("comment-success", null);
+
+$("#container").append('<p>visitor_openid - '+ $.fn.cookie("visitor_openid") +'</p>');
+$("#container").append('<p>share-mask - '+ $.fn.cookie("share-mask") +'</p>');
+$("#container").append('<p>comment-success - '+ $.fn.cookie("comment-success") +'</p>');
+
+</script>
+</html>
+~                                                                                                         
+~      

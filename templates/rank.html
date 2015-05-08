@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html class="fully">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title></title>
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/base.css">
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/kidbook.css">
+<script src="{{STATIC_URL}}js/cfg.js"></script>
+<script src="{{STATIC_URL}}js/zepto.min.js"></script>
+<script src="{{STATIC_URL}}js/zepto.cookie.min.js"></script>
+</head>
+<body class="fully">
+<div class="container fully yscroll rank" id="container">
+	<div class="rank-body yscroll">
+        <div class="rank-top">
+		<div></div>
+		<p class="small">中国童书博览会</p>
+		<p>妈妈最爱的绘本推荐</p>
+		<a href="/first.html" class="btn">首页</a>
+	</div>
+	<div class="rank-text scope">
+	        <p>对于孩子来说，一本好绘本蕴含着巨大的成长能量。</p>
+                <p>如何给孩子一本好绘本？</p>
+                <p>又是爸爸妈妈、出版机构和出书作家、画家们共同面对的问题。</p>
+                <p class="bold">分享你最爱的绘本，真实解决“最”痛点。</p>
+        </div>
+	<a class="rank-neck" href="/vote/pie">看妈妈们的推荐</a>
+	<table class="scope">
+               <tr>
+                   <th>推荐书名</th>
+                   <th>宝宝年龄</th>
+                   <th>性别</th>
+                   <th>推荐理由</th>
+               </tr>
+               {% for vote in votes %}
+		<tr>
+			<td><div>{{vote.bookname}}</div></td>
+			<td><div>{{vote.age}}</div></td>
+			{% if vote.sex == 1 %}
+			<td><div>男</div></td>
+                        {% else %}
+			<td><div>女</div></td>
+                        {% endif %}
+			<td><div>{{vote.reason}}</div></td>
+		</tr>
+                {% endfor %}
+	</table>
+	</div>
+	<div class="rank-btm">
+		<div class="scope" id="recommend">我也要推荐</div>
+	</div>
+</div>
+
+</body>
+<script src="{{STATIC_URL}}js/recommend.js"></script>
+
+<script>
+$("#recommend").on("click", function(){
+        new Recommend();
+});
+</script>
+</script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="{{STATIC_URL}}js/wx-share.js"></script>
+<script>
+new WXShare({
+        title : "写下最爱的绘本，为孩子成长加分"
+});
+</script>
+</html>
