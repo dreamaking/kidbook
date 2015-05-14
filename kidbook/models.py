@@ -46,6 +46,32 @@ class Image(models.Model):
     modify_time = models.DateField(u'修改时间',auto_now=True)
     user = models.ForeignKey( User)
 
+    def image_display(self):
+        url = self.get_thumbnail(self.image)
+        return '<a href="{0}"><img src="{0}" style="width:100px"></a>'.format(url, url)
+    image_display.allow_tags = True
+
+    def edit(self):
+        return '<a href="/w/manage/kidbook/image/{0}/">编辑</a>'.format(self.id)
+    edit.allow_tags = True
+
+    def get_author(self):
+        return self.user.author
+    
+    def get_phone(self):
+        return self.user.phone
+
+    def get_thumbnail(self, image):
+        oldpath = '/media/{0}'.format(image)
+        prefix = oldpath[0:oldpath.index('.')]
+        suffix = oldpath[oldpath.index('.'):]
+        newpath = prefix + '_s' + suffix
+        return newpath
+
+    class Meta:
+        verbose_name = u'图片'
+        verbose_name_plural = u'图片列表'
+
 
 class Vote(models.Model):
     id = models.AutoField(primary_key=True)
@@ -95,3 +121,20 @@ class Company(models.Model):
         verbose_name = u'图书参展商'
         verbose_name_plural = u'图书参展商'
 
+
+class Card(models.Model):
+    id = models.CharField(u'卡券ID', max_length=100, primary_key=True)
+    card_type = models.CharField(u'卡券类型', max_length=100)
+    title = models.CharField(u'卡券标题', max_length=100)
+    sub_title = models.CharField(u'卡券副标题', max_length=100)
+    color = models.CharField(u'卡券颜色', max_length=100, choices=((u'1', '浅绿'),(u'2', '深绿'),(u'3', '浅蓝'), ('4', '深蓝'), ('5', '浅紫'), ('6', '土黄'), ('7', '明黄'), ('8', '橘黄'), ('9', '橘红'), ('4', '深红')))
+    date_begin =  models.CharField(u'开始时间', max_length=100, null=True, blank=True)
+    date_end =  models.CharField(u'结束时间', max_length=100, null=True, blank=True)   
+
+    is_active = models.BooleanField(u'是否显示', default=True)
+    create_time = models.DateTimeField(u'创建时间',auto_now_add=True)
+    modify_time = models.DateTimeField(u'修改时间',auto_now=True)
+
+    class Meta:
+        verbose_name = u'卡券'
+        verbose_name_plural = u'卡券列表'

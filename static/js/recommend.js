@@ -8,7 +8,7 @@ function Recommend(){
 	+'			<input type="hidden" name="openid" value="'+ this.getOpenId() +'">'
 	+'			<div class="rcmd-row rcmd-gender scope">'
 	+'				<span class="bold">孩子性别</span>'
-	+'				<input type="radio" name="sex" value="1">'
+	+'				<input type="radio" name="sex" value="1" checked>'
 	+'				<span class="rcmd-male">男</span>'
 	+'				<input type="radio" name="sex" value="2">'
 	+'				<span class="rcmd-female">女</span>'

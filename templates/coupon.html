@@ -31,27 +31,16 @@
 </div>
 <input type="hidden" id="activity_id" value="{{vote.id}}">
 </body>
-<script src="{{STATIC_URL}}js/qrm.js"></script>
-<script>
-$("#tiki-qr").on("click", function(){
-        new Qrm();
-});
-</script>
-<script src="{{STATIC_URL}}js/share.js"></script>
-<script>
-$("#shr").on("click", function(){
-        new Share();
-});
-</script>
 <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 <script src="{{STATIC_URL}}js/wait.js"></script>
 <script src="{{STATIC_URL}}js/wx-card.js"></script>
-<script src="{{STATIC_URL}}js/tiki-card.js"></script>
-<script>new TikiCard({cardId : "pfdNtt2VCd-B--OsLdE3dn4yJpIc"});</script>
+<script src="{{STATIC_URL}}js/coupon-card.js"></script>
+<script>new CouponCard({cardId : "pfdNtty6N15zJL2ehcc9g73BB2Co"});</script>
+<!-- <script>new CouponCard({cardId : "pfdNtt8UegRT9yilMtW_ExIC09xo"});</script> -->
 <script src="{{STATIC_URL}}js/wx-share.js"></script>
 <script>
 new WXShare({
-        title : "这儿的六一很精彩，我想带上小宝去看看。"
+        title : "写下最爱的绘本，为孩子成长加分"
 });
 </script>
 </html>

@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html class="fully">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>卡包</title>
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/base.css">
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/kidbook.css">
+<script src="{{STATIC_URL}}js/cfg.js"></script>
+<script src="{{STATIC_URL}}js/zepto.min.js"></script>
+<script src="{{STATIC_URL}}js/zepto.cookie.min.js"></script>
+</head>
+<body class="fully">
+<div class="container card fully yscroll" id="container">
+	<ul class="card-box">
+                {% for card in cards %}
+		<li class="card-bg01" data-cardid="{{card.id}}">
+			<div class="card-icon"></div>
+			<div class="card-name">{{card.title}}</div>
+			<div class="card-dots"></div>
+			<div class="card-info">
+				<span>中国图书博览会</span>
+				<span>有效期至：2015.06.03</span>
+			</div>
+		</li>
+                {% endfor %}
+	</ul>
+</div>
+</body>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="{{STATIC_URL}}js/wait.js"></script>
+<script src="{{STATIC_URL}}js/wx-card.js"></script>
+<script src="{{STATIC_URL}}js/card-list.js"></script>
+<script>new CardList();</script>
+</html>

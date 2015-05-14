@@ -49,7 +49,7 @@ WEIXIN_AUTH_SCOPE_2 = 'snsapi_userinfo'
 WEXIN_GLOBAL_TYPE = 'client_credential'
 
 
-ACTIVITY_TICKET_SUPPORTER_NUM = 1
+ACTIVITY_TICKET_SUPPORTER_NUM = 6
 
 
 class api(object):
@@ -123,15 +123,20 @@ def weixin_card_signature(request):
         cache.set('card_ticket', card_ticket, 7000)
 
     params = request.GET
+    signtype = request.GET.get('signType') if request.GET.get('signType') else ''
+    openid = request.GET.get('openid') if request.GET.get('openid') else ''
+    cardid = request.GET.get('card_id') if request.GET.get('card_id') else ''
+    timestamp = request.GET.get('timestamp') if request.GET.get('timestamp') else ''
+    balance = request.GET.get('balance') if request.GET.get('balance') else ''
     #array = [ params['timestamp'], params['openid'], params['code'], params['card_id'], params['balance'], card_ticket ]
-    array = [ params['timestamp'], params['openid'], params['card_id'], params['balance'], card_ticket ]
+    array = [ timestamp, openid, cardid, balance, card_ticket, signtype ]
     array.sort()
     s = ''.join(array)
     signature = hashlib.sha1(s).hexdigest()
     result['code'] = 200
     result['signature'] = signature
     result['ticket'] = card_ticket
-    print "++++++++++++++", params['timestamp'], params['openid'], '''params['code']''', params['card_id'], params['balance'], card_ticket, signature
+    print "++++++++++++++", timestamp, openid, '''params['code']''', cardid, balance, card_ticket, signtype, signature
     return HttpResponse(json.dumps(result))
 
 def set_test_list(request):
@@ -275,7 +280,7 @@ def query_image(request):
     pageno = request.GET.get('pageno')
     pagesize = request.GET.get('pagesize') 
     start = (int(pageno) - 1) * int(pagesize)
-    images = Image.objects.all().order_by('-id')[start : start + int(pagesize)]
+    images = Image.objects.filter(is_active=True).order_by('-id')[start : start + int(pagesize)]
     result['code'] = 200
     data = []
     
@@ -299,7 +304,7 @@ def query_image(request):
     result['data'] = data
     result['pagesize'] = int(pagesize)
     result['pageno'] = int(pageno)
-    result['totalpage'] = int(math.ceil(Image.objects.all().count() / int(pagesize)))
+    result['totalpage'] = int(math.ceil(Image.objects.filter(is_active=True).count() / int(pagesize)))
     print pageno, pagesize, result['totalpage']
     return HttpResponse(json.dumps(result))
 
@@ -392,11 +397,14 @@ def all_vote(request):
     template = 'rank.html'
     votes = Vote.objects.all()
     result['votes'] = votes
-    return common_auth(request, template, result)    
+    response = common_auth(request, template, result)  
+    return response  
 
 def save_vote(request):
     result = {}
     openid = request.POST.get('openid')
+    if not openid:
+        return all_vote(request)
     bookname = request.POST.get('bookname')
     sex = request.POST.get('sex')
     age = request.POST.get('age')
@@ -405,9 +413,10 @@ def save_vote(request):
     vote = Vote(user = user, bookname = bookname, sex = int(sex), age = int(age), reason = reason)
     vote.save()
     result['vote'] = vote
-    #response = render_to_response("coupon.html", result, context_instance=RequestContext(request))
-    #return response
-    return pie_vote(request)
+    response = render_to_response("coupon.html", result, context_instance=RequestContext(request))
+    
+    #response = pie_vote(request)
+    return response
 
 def pie_vote(request):
     result = {}
@@ -424,18 +433,23 @@ def pie_vote(request):
 
 
 def check_ticket_vote(request):
+    result = __check_ticket_vote__(request)
+    return HttpResponse(json.dumps(result))
+
+def __check_ticket_vote__(request):
     result = {}
     id = request.GET.get('id')
     vote = Vote.objects.get(id = int(id))
     if vote.is_receive:
         result['status'] = 'HAVE_RECEIVED'
-    elif not activity.is_receive:
+    elif not vote.is_receive:
         result['status'] = 'RECEIVEABLE'
     result['code'] = 200
-    return HttpResponse(json.dumps(result))
+    return result
 
 def receive_ticket_vote(request):
-    result = check_ticket_vote(request)
+    result = __check_ticket_vote__(request)
+    id = request.GET.get('id')
     if result.get('status') == 'RECEIVEABLE':
         vote = Vote.objects.get(id = int(id))
         vote.is_receive = True
@@ -486,7 +500,12 @@ def get_activity(request):
     result['user'] = user
      # 判断是否是本人
     if activity.owner.openid == user.openid:
-        template = 'tiki.html'
+        if len(group) >= ACTIVITY_TICKET_SUPPORTER_NUM:
+       
+            template = 'tiki.html'
+            #template = 'pocket.html'
+        else:
+            template = 'aid.html'
         response = render_to_response(template, result, context_instance=RequestContext(request))   
         return response
     # 判断有没有投票
@@ -503,10 +522,15 @@ def get_activity(request):
 
 def support_activity(request):
     result = {}
-    id = request.GET.get('id')
-    activity = Activity.objects.get(id = int(id))
+    openid = request.COOKIES.get('visitor_openid')
+    if not openid:
+        template = ''
+        return common_auth(request, template, result)
+
     openid = request.COOKIES.get('visitor_openid')
     user = User.objects.get(openid = openid)
+    id = request.GET.get('id')
+    activity = Activity.objects.get(id = int(id))
     support = ActivityDetail.objects.filter(activity = activity, follower = user)
     if not support:
         ad = ActivityDetail(activity = activity, follower = user)
@@ -517,6 +541,10 @@ def support_activity(request):
 
 
 def check_ticket_activity(request):
+    result = __check_ticket_activity__(request)
+    return HttpResponse(json.dumps(result))
+
+def __check_ticket_activity__(request):
     result = {}
     id = request.GET.get('id')
     activity = Activity.objects.get(id = int(id))
@@ -528,11 +556,12 @@ def check_ticket_activity(request):
     elif not activity.is_receive:
         result['status'] = 'RECEIVEABLE'
     result['code'] = 200
-    return HttpResponse(json.dumps(result))
+    return result 
+
 
 def receive_ticket_activity(request):
-    print "########"
-    result = check_ticket_activity(request)
+    result = __check_ticket_activity__(request)
+    id = request.GET.get('id')
     if result.get('status') == 'RECEIVEABLE':
         activity = Activity.objects.get(id = int(id))
         activity.is_receive = True
@@ -542,6 +571,20 @@ def receive_ticket_activity(request):
         result['status'] = 'FAIL'
     result['code'] = 200
     return HttpResponse(json.dumps(result))
+
+def list_card(request):
+    result = {}
+    template = 'card.html'
+    openid = request.COOKIES.get('visitor_openid')
+    if not openid:
+        return common_auth(request, template, result)
+
+    user = User.objects.get(openid = openid)
+    cards = Card.objects.all()
+    result['cards'] = cards
+    response = render_to_response(template, result, context_instance=RequestContext(request))
+    return response
+    
 
 def clear(request):
     return render_to_response("clear-cookie.html", {}, context_instance=RequestContext(request))

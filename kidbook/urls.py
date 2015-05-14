@@ -38,6 +38,8 @@ urlpatterns = patterns('',
     (r'^activity/check_ticket', check_ticket_activity),
     (r'^activity/receive_ticket', receive_ticket_activity),
     
+    (r'^card/list', list_card),
+    
     url(r'^$', TemplateView.as_view(template_name='first.html'), name="first"),
     url(r'^first.html', TemplateView.as_view(template_name='first.html'), name="first"),
     url(r'^todo.html', TemplateView.as_view(template_name='todo.html'), name="todo"),

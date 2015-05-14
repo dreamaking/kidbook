@@ -1,0 +1,8 @@
+media/
+publish/
+logs/
+.idea/
+*.iml
+*.pyc
+*.log
+

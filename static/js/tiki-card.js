@@ -37,12 +37,10 @@ TikiCard.prototype = {
 		function receive_ticket(){
 			var url = window.cfg.receive_ticket,
 				param = {};
-			alert(url);
 			param.id = $("#activity_id").val();
 			param.cardid = self.cardId;
 			$.get(url, param, function(data){
 				if(data.code == 200){
-					new Wait("门票领取成功", "autoHide");
 					$(self.btnId)
 						.after('<div class="center gray">已领取</div>')
 						.remove();
